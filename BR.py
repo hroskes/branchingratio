@@ -75,7 +75,7 @@ def averageBR(productionmode, mass):
     t.GetEntry(0)
     multiplyweight = GammaHZZ_YR3(basemass) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass))
     t.GetEntry(1)
-    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
+#    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
 
     BR, weights, weights_rwttoBW = \
       zip(*([multiplyweight * abs(t.genHEPMCweight), sgn(t.genHEPMCweight), sgn(t.genHEPMCweight)*t.p_Gen_CPStoBWPropRewgt] for entry in t))
@@ -83,6 +83,7 @@ def averageBR(productionmode, mass):
     return numpy.average(BR, weights=weights), numpy.average(BR, weights=weights_rwttoBW)
 
 if __name__ == "__main__":
+  line = "{:3} {:4d} {:6.2%} {:6.2%} {:6.2%}"
   for p in "VBF",:
-    for m in 300, 500:
-      print(p, m, yellowhiggs.br(m, "ZZ")[0], *averageBR(p, m))
+    for m in 300, 350, 400, 450, 500, 550, 600, 700, 750, 800, 900, 1000, 1500, 2000, 2500, 3000:
+      print(line.format(p, m, yellowhiggs.br(m, "ZZ")[0] if m<=1000 else float("nan"), *averageBR(p, m)))
