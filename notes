@@ -1,0 +1,28 @@
+weight(m4l) = GammaHZZ_JHUGen(m4l) / GammaH_YR2(m4l) * junk
+
+we want: GammaHZZ_correct(m4l) / GammaH_YR2(m4l)
+
+GammaHZZ_correct(m4l) = GammaHZZ_JHUGen(m4l) * k
+
+GammaHZZ_correct(300) = GammaHZZ_YR(300)
+
+GammaHZZ_correct(m4l) / GammaHZZ_correct(300) = GammaHZZ_JHUGen(m4l) / GammaHZZ_JHUGen(300)
+GammaHZZ_correct(m4l) = GammaHZZ_YR(300) / GammaHZZ_JHUGen(300) * GammaHZZ_JHUGen(m4l)
+
+junk = weight(m4l) * GammaH_YR2(m4l) / GammaHZZ_JHUGen(m4l)
+
+we want: GammaHZZ_YR(300) / GammaHZZ_JHUGen(300) * GammaHZZ_JHUGen(m4l) / GammaH_YR2(m4l)
+we want: GammaHZZ_YR(300) * GammaHZZ_JHUGen(m4l) / (GammaHZZ_JHUGen(300) * GammaH_YR2(m4l))
+
+GammaHZZ_JHUGen(m4l) = weight(m4l) * GammaH_YR2(m4l) / junk
+
+we want: GammaHZZ_YR(300) * weight(m4l) * GammaH_YR2(m4l) / (GammaHZZ_JHUGen(300) * GammaH_YR2(m4l) * junk)
+
+
+
+junk = weight(firstevent) * GammaH_YR2(firstevent) / GammaHZZ_JHUGen(firstevent)
+
+
+we want: GammaHZZ_YR(300) * weight(m4l) * GammaH_YR2(m4l) * GammaHZZ_JHUGen(firstevent) / (GammaHZZ_JHUGen(300) * GammaH_YR2(m4l) * weight(firstevent) * GammaH_YR2(firstevent))
+
+we want: weight(m4l) * GammaHZZ_YR(300) * GammaHZZ_JHUGen(firstevent) / (GammaHZZ_JHUGen(300) * weight(firstevent) * GammaH_YR2(firstevent))

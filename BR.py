@@ -2,12 +2,16 @@
 
 from __future__ import print_function
 from utilities import cache, cd, TFile
-import contextlib, urllib, re, subprocess, os, numpy
+import contextlib, urllib, re, subprocess, os, numpy, math
+import yellowhiggs #to get this, run: pip install --user -e git+git://github.com/hroskes/yellowhiggs.git@master#egg=yellowhiggs
 
-GammaHany_YR3_300 = 8.43E+00
-BRHZZ_YR3_300 = 3.07E-01
+basemass = 300
 
-GammaHZZ_YR3_300 = GammaHany_YR3_300*BRHZZ_YR3_300
+def GammaHZZ_YR3(mass):
+  return yellowhiggs.width(mass)[0] * yellowhiggs.br(mass, "ZZ")[0]
+
+def sgn(number):
+  return math.copysign(1, number)
 
 @cache
 def setupJHUGen():
@@ -54,7 +58,7 @@ def GammaHZZ_JHU(mass):
     assert False
 
 @cache
-def GammaHZZ_YR2(mass):
+def GammaH_YR2(mass):
   setupBigGamma()
   with cd("BigGamma"):
     return float(subprocess.check_output(["./BigGamma", str(mass)]))
@@ -69,16 +73,16 @@ def averageBR(productionmode, mass):
     t.SetBranchStatus("genHEPMCweight", 1)
     t.SetBranchStatus("p_Gen_CPStoBWPropRewgt", 1)
     t.GetEntry(0)
-    multiplyweight = getGammaZZ_JHU(t.GenHMass) / t.genHEPMCweight * BR_YR3_125 / getGammaZZ_JHU(125)
+    multiplyweight = GammaHZZ_YR3(basemass) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass))
     t.GetEntry(1)
-#    print("test should be equal:", multiplyweight, getGammaZZ_JHU(t.GenHMass) / t.genHEPMCweight * BR_YR3_125 / getGammaZZ_JHU(125))
+    print("test should be equal:", multiplyweight, GammaHZZ_YR3(basemass) * GammaHZZ_JHU(t.GenHMass) / (GammaHZZ_JHU(basemass) * t.genHEPMCweight * GammaH_YR2(t.GenHMass)))
 
-    BR, weights = zip(*([multiplyweight * t.genHEPMCweight, t.p_Gen_CPStoBWPropRewgt] for entry in t))
+    BR, weights, weights_rwttoBW = \
+      zip(*([multiplyweight * abs(t.genHEPMCweight), sgn(t.genHEPMCweight), sgn(t.genHEPMCweight)*t.p_Gen_CPStoBWPropRewgt] for entry in t))
 
-    return numpy.average(BR, weights=weights), numpy.average(BR)
+    return numpy.average(BR, weights=weights), numpy.average(BR, weights=weights_rwttoBW)
 
 if __name__ == "__main__":
-  print(GammaHZZ_YR2(125))
-#  for p in "VBF",:
-#    for m in 300, 500:
-#      print(p, m, *averageBR(p, m))
+  for p in "VBF",:
+    for m in 300, 500:
+      print(p, m, yellowhiggs.br(m, "ZZ")[0], *averageBR(p, m))
